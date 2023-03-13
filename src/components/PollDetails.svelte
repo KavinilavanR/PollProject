@@ -1,43 +1,37 @@
 <script>
   import Card from "../shared/Card.svelte";
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher } from "svelte";
   const dispatch = createEventDispatcher();
 
-//   import { each } from "svelte/internal";
+  export let poll = [];
+  let totalVotes = 0;
+  let percentage = {};
+  const background = ['rgba(69, 196, 150, 0.2)',' rgba(217, 27, 66, 0.2)','rgba(94, 69, 196, 0.2)','rgba(192, 183, 78, 0.2)'];
+  const border = ['#45c496','#d91b42','#6c1aca','#d0c319'];
 
-export let poll=[];
-let totalVotes = 0;
-let percentage={};
-console.log('poll',poll);
-
-$: {
-    totalVotes =0;
+  $: {
+    totalVotes = 0;
     for (const [key, value] of Object.entries(poll.optionvalues)) {
-    console.log(`${key}: ${value}`);
-    totalVotes+=value;
+      console.log(`${key}: ${value}`);
+      totalVotes += value;
     }
     for (const [key, value] of Object.entries(poll.optionvalues)) {
-    percentage[key] = 0;
-    if(totalVotes!=0)
-   { percentage[key] = Math.floor((value/totalVotes)*100);
-    console.log(`${key}: ${value} : ${totalVotes}`);
-   }
-}
-
-
-
-
-}// totalVotes
-const increaseVote = (name, key, value) => {
-    // poll.optionvalues[key] = value+1;
-    const pollData ={
-       name,
-        key,
-        value,
-        // id:Math.random()
+      percentage[key] = 0;
+      if (totalVotes != 0) {
+        percentage[key] = Math.floor((value / totalVotes) * 100);
+        console.log(`${key}: ${value} : ${totalVotes}`);
+      }
+    }
+  }
+  const increaseVote = (name, key, value) => {
+    const pollData = {
+      name,
+      key,
+      value,
+      id: Math.random(),
     };
-    dispatch('vote',pollData);
-}
+    dispatch("vote", pollData);
+  };
 </script>
 
 <Card>
@@ -51,7 +45,9 @@ const increaseVote = (name, key, value) => {
           on:click={() => {
             increaseVote(poll.pollName, key, value);
           }}
-        > <div class="percent percent-{i}" style="width: {percentage[key]}%"></div>
+        >
+          <div class="percent" style="background: {background[i%4]};
+          border-left: 4px solid {border[i%4]}; width: {percentage[key]}%" />
           <span>{key}-{value}</span>
         </div>
       {/each}
@@ -74,7 +70,7 @@ const increaseVote = (name, key, value) => {
     color: #555;
   }
   .poll-option {
-      height: 40px;
+    height: 40px;
     background: #fafafa;
     cursor: pointer;
     margin: 10px auto;
@@ -83,20 +79,12 @@ const increaseVote = (name, key, value) => {
   .poll-option:hover {
     opacity: 0.6;
   }
-  .percent{
+  .percent {
     height: 100%;
     position: absolute;
     box-sizing: border-box;
   }
-  .percent-0{
-    background: rgba(217,27,66,0.2);
-    border-left: 4px solid #d91b42;
-  }
-  .percent-1{
-    background: rgba(69,196,150,0.2);
-    border-left: 4px solid #45c496;
-  }
-  span{
+  span {
     padding: 10px;
   }
 </style>
